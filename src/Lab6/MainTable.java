@@ -22,6 +22,8 @@ public class MainTable implements TableModelListener {
     private static Color defaultColor;
     JTable tbl;
     TableModel tblModel;
+
+    ArrayList<HardDrive> driveArrayList = new ArrayList<>();
     private TableRowSorter<DriveTableModel> sorter;
     private RowFilter<Object, Object> filter;
 
@@ -36,8 +38,22 @@ public class MainTable implements TableModelListener {
     JTextField model = new JTextField(5);
     JTextField cost = new JTextField(5);
     JTextField launchDate = new JTextField(7);
+    JButton bAdd = new JButton("Add");
+    JButton bClear = new JButton("Clear");
+    JButton filterButton = new JButton("Фильтр");
+    JButton sortButton = new JButton("Сортировка по ёмкости");
+    JTextField filterText = new JTextField(20);
 
     public MainTable() throws ParseException {
+        tblModel = creatingInfo();
+
+        creatingUI();
+
+        addingListeners();
+
+    }
+
+    private void creatingUI() {
         JFrame frm = new JFrame("Books");
         JPanel pnlTbl = new JPanel();
         JPanel pnlEdt = new JPanel();
@@ -45,28 +61,47 @@ public class MainTable implements TableModelListener {
         pnlTbl.setLayout(new BorderLayout());
         pnlEdt.setLayout(new FlowLayout());
 
-
-        JButton bAdd = new JButton("Add");
-        JButton bClear = new JButton("Clear");
         frm.setLayout(new BorderLayout());
         frm.setSize(600, 200);
         frm.setLocation(50, 300);
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        HardDrive[] drives = new HardDrive[10];
-        for (int i = 0; i < drives.length; i++) {
-            drives[i] = new HardDrive(
-                    "Manufacturer " + (drives.length - i),
-                    512 + (drives.length - i) * 8,
-                    new Date(),
-                    new HardDriveType(i, "Name " + i),
-                    "Model " + i,
-                    200 + i * 20,
-                    new Date()
-            );
-        }
 
-        List<HardDrive> driveList = Arrays.asList(drives);
-        ArrayList<HardDrive> driveArrayList = new ArrayList<>(driveList);
+        tblModel.addTableModelListener(this);
+        tbl = new JTable(tblModel);
+        tbl.setDefaultRenderer (Object.class, new StrRenderer());
+        tbl.setDefaultRenderer (Number.class, new CapacityRenderer());
+
+        RowSorter<DriveTableModel> sorter =
+                new TableRowSorter<>((DriveTableModel) tblModel);
+        tbl.setRowSorter(sorter);
+        JScrollPane scroll = new JScrollPane(tbl);
+        tbl.setPreferredScrollableViewportSize(new Dimension(300, 100));
+        pnlTbl.add(scroll);
+        pnlEdt.add(manufacturer);
+        pnlEdt.add(capacity);
+        pnlEdt.add(accessTime);
+        pnlEdt.add(kod);
+        pnlEdt.add(name);
+        pnlEdt.add(model);
+        pnlEdt.add(cost);
+        pnlEdt.add(launchDate);
+        pnlEdt.add(bAdd);
+        pnlEdt.add(bClear);
+        defaultColor = kod.getBackground();
+        kod.setForeground(Color.BLACK);
+
+        pnlEdt.add(filterText);
+        pnlEdt.add(filterButton);
+
+        pnlEdt.add(sortButton);
+
+        frm.getContentPane().add(pnlTbl, BorderLayout.CENTER);
+        frm.getContentPane().add(pnlEdt, BorderLayout.SOUTH);
+        frm.setVisible(true);
+        frm.pack();
+    }
+
+    private void addingListeners() {
         bAdd.addActionListener(e -> {
             try {
                 if(flag) {
@@ -95,59 +130,38 @@ public class MainTable implements TableModelListener {
             tbl.updateUI();
         });
         bClear.addActionListener(e -> clearFields());
-        tblModel = new DriveTableModel(driveArrayList);
-        tblModel.addTableModelListener(this);
-        tbl = new JTable(tblModel);
-        tbl.setDefaultRenderer (Object.class, new StrRenderer());
-        tbl.setDefaultRenderer (Number.class, new CapacityRenderer());
-
-        RowSorter<DriveTableModel> sorter =
-                new TableRowSorter<>((DriveTableModel) tblModel);
-        tbl.setRowSorter(sorter);
-        JScrollPane scroll = new JScrollPane(tbl);
-        tbl.setPreferredScrollableViewportSize(new Dimension(300, 100));
-        pnlTbl.add(scroll);
-        pnlEdt.add(manufacturer);
-        pnlEdt.add(capacity);
-        pnlEdt.add(accessTime);
-        pnlEdt.add(kod);
-        pnlEdt.add(name);
-        pnlEdt.add(model);
-        pnlEdt.add(cost);
-        pnlEdt.add(launchDate);
-        pnlEdt.add(bAdd);
-        pnlEdt.add(bClear);
-        defaultColor = kod.getBackground();
-        kod.setForeground(Color.BLACK);
-
-
-        JTextField filterText = new JTextField(20);
-        JButton filterButton = new JButton("Фильтр");
 
         filterButton.addActionListener(e -> {
             String text = filterText.getText();
             applyFilter(text);
         });
 
-        pnlEdt.add(filterText);
-        pnlEdt.add(filterButton);
-
-        JButton sortButton = new JButton("Сортировка по ёмкости");
-
-        sortButton.addActionListener(e -> applySorting());
-
-        pnlEdt.add(sortButton);
-
         tbl.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = tbl.getSelectedRow();
             setFieldsFromSelectedRow(selectedRow, driveArrayList);
         });
 
-        frm.getContentPane().add(pnlTbl, BorderLayout.CENTER);
-        frm.getContentPane().add(pnlEdt, BorderLayout.SOUTH);
-        frm.setVisible(true);
-        frm.pack();
+        sortButton.addActionListener(e -> applySorting());
+    }
 
+    private TableModel creatingInfo() {
+        HardDrive[] drives = new HardDrive[10];
+        for (int i = 0; i < drives.length; i++) {
+            drives[i] = new HardDrive(
+                    "Manufacturer " + (drives.length - i),
+                    512 + (drives.length - i) * 8,
+                    new Date(),
+                    new HardDriveType(i, "Name " + i),
+                    "Model " + i,
+                    200 + i * 20,
+                    new Date()
+            );
+        }
+
+        List<HardDrive> driveList = Arrays.asList(drives);
+        ArrayList<HardDrive> driveArrayList = new ArrayList<>(driveList);
+        tblModel = new DriveTableModel(driveArrayList);
+        return tblModel;
     }
 
     public static Color getDefaultColor() {
