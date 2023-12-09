@@ -6,53 +6,55 @@ public class DepartmentManager implements DepartmentManagement{
     private HashMap<String, HashMap<String, Employee>> departments = new HashMap<>();
 
     @Override
-    public boolean openDepartment(String departmentName) {
+    public String openDepartment(String departmentName) {
         if (!departments.containsKey(departmentName)) {
             departments.put(departmentName, new HashMap<>());
-            return true;
+            return "Департамент открыт успешно";
         }
-        return false;
+        return "Возможно такой департамент уже существует";
     }
 
     @Override
-    public boolean hireEmployee(String departmentName, String position, String employeeName) {
+    public String hireEmployee(String departmentName, String position, String employeeName) {
         if (departments.containsKey(departmentName)) {
             Employee employee = new Employee(employeeName, position);
             departments.get(departmentName).put(employeeName, employee);
-            return true;
+            return "Сотрудник по имени " + employeeName +" нанят";
         }
-        return false;
+        return "Сотрудник не принят на работу";
     }
 
     @Override
-    public boolean transferEmployee(String employeeName, String fromDepartment, String toDepartment) {
+    public String transferEmployee(String employeeName, String fromDepartment, String toDepartment) {
         if (departments.containsKey(fromDepartment) && departments.containsKey(toDepartment)) {
             if (departments.get(fromDepartment).containsKey(employeeName)) {
                 Employee employee = departments.get(fromDepartment).remove(employeeName);
                 departments.get(toDepartment).put(employeeName, employee);
-                return true;
+                return "Сотрудника по имени " + employeeName +" перевели в департамент " + toDepartment;
             }
         }
-        return false;
+        return "Сотрудник не был переведен";
     }
 
     @Override
-    public boolean dismissEmployee(String employeeName, String departmentName) {
+    public String dismissEmployee(String employeeName, String departmentName) {
         if (departments.containsKey(departmentName)) {
-            return departments.get(departmentName).remove(employeeName) != null;
+            if (departments.get(departmentName).remove(employeeName) != null) {
+                return "Сотрудник уволен";
+            }
         }
-        return false;
+        return "Сотрудник не уволен";
     }
 
     @Override
-    public boolean changeEmployeePosition(String employeeName, String newPosition) {
+    public String changeEmployeePosition(String employeeName, String newPosition) {
         for (HashMap<String, Employee> department : departments.values()) {
             if (department.containsKey(employeeName)) {
                 department.get(employeeName).getPosition();
-                return true;
+                return "Сотрудник переведен";
             }
         }
-        return false;
+        return "Неудача";
     }
 
     @Override
