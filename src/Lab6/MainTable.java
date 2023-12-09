@@ -54,7 +54,7 @@ public class MainTable implements TableModelListener {
     }
 
     private void creatingUI() {
-        JFrame frm = new JFrame("Books");
+        JFrame frm = new JFrame("Drives");
         JPanel pnlTbl = new JPanel();
         JPanel pnlEdt = new JPanel();
 
@@ -66,13 +66,11 @@ public class MainTable implements TableModelListener {
         frm.setLocation(50, 300);
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        tblModel.addTableModelListener(this);
-        tbl = new JTable(tblModel);
-        tbl.setDefaultRenderer (Object.class, new StrRenderer());
+        tbl.setDefaultRenderer (String.class, new StrRenderer());
         tbl.setDefaultRenderer (Number.class, new CapacityRenderer());
 
         RowSorter<DriveTableModel> sorter =
-                new TableRowSorter<>((DriveTableModel) tblModel);
+                new TableRowSorter<>((DriveTableModel) this.tblModel);
         tbl.setRowSorter(sorter);
         JScrollPane scroll = new JScrollPane(tbl);
         tbl.setPreferredScrollableViewportSize(new Dimension(300, 100));
@@ -122,13 +120,16 @@ public class MainTable implements TableModelListener {
                             model.getText(),
                             Double.parseDouble(cost.getText()),
                             dateFormat.parse(launchDate.getText())));
+
                 }
             } catch (NumberFormatException | ParseException exception) {
                 exception.printStackTrace();
             }
             ((AbstractTableModel)tblModel).fireTableDataChanged();
             tbl.updateUI();
+            System.out.println(driveArrayList);
         });
+
         bClear.addActionListener(e -> clearFields());
 
         filterButton.addActionListener(e -> {
@@ -138,7 +139,7 @@ public class MainTable implements TableModelListener {
 
         tbl.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = tbl.getSelectedRow();
-            setFieldsFromSelectedRow(selectedRow, driveArrayList);
+            setFieldsFromSelectedRow(selectedRow, this.driveArrayList);
         });
 
         sortButton.addActionListener(e -> applySorting());
@@ -157,10 +158,11 @@ public class MainTable implements TableModelListener {
                     new Date()
             );
         }
-
         List<HardDrive> driveList = Arrays.asList(drives);
-        ArrayList<HardDrive> driveArrayList = new ArrayList<>(driveList);
+        driveArrayList = new ArrayList<>(driveList);
         tblModel = new DriveTableModel(driveArrayList);
+        tblModel.addTableModelListener(this);
+        tbl = new JTable(tblModel);
         return tblModel;
     }
 

@@ -29,14 +29,14 @@ public class DriveTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int c) {
         return switch (c) {
-            case 0 -> "manufacturer";
-            case 1 -> "capacity";
-            case 2 -> "accessTime";
-            case 3 -> "kod";
-            case 4 -> "name";
-            case 5 -> "model";
-            case 6 -> "cost";
-            case 7 -> "launchDate";
+            case 0 -> "Производитель";
+            case 1 -> "Ëмкость";
+            case 2 -> "Время доступа";
+            case 3 -> "Код";
+            case 4 -> "Название";
+            case 5 -> "Модель";
+            case 6 -> "Стоимость";
+            case 7 -> "Дата запуска";
             default -> "";
         };
     }
