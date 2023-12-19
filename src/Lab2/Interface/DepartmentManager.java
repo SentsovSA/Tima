@@ -1,5 +1,7 @@
 package Lab2.Interface;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class DepartmentManager implements DepartmentManagement{
@@ -57,11 +59,12 @@ public class DepartmentManager implements DepartmentManagement{
         return "Неудача";
     }
 
+
     @Override
     public String getDepartmentInfo(String departmentName) {
         if (departments.containsKey(departmentName)) {
-            return departments.get(departmentName).toString();
+            return departmentName + " = " + departments.get(departmentName).toString();
         }
-        return "Department not found";
+        return "Департамент не найден";
     }
 }

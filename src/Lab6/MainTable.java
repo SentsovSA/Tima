@@ -54,15 +54,13 @@ public class MainTable implements TableModelListener {
     }
 
     private void creatingUI() {
-        JFrame frm = new JFrame("Drives");
+        JFrame frm = new JFrame("Накопители");
         JPanel pnlTbl = new JPanel();
         JPanel pnlEdt = new JPanel();
 
         pnlTbl.setLayout(new BorderLayout());
-        pnlEdt.setLayout(new FlowLayout());
 
         frm.setLayout(new BorderLayout());
-        frm.setSize(600, 200);
         frm.setLocation(50, 300);
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

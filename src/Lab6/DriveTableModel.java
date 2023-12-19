@@ -48,11 +48,11 @@ public class DriveTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int r, int c) {
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss");
         return switch (c) {
             case 0 -> drives.get(r).getManufacturer();
             case 1 -> drives.get(r).getCapacity();
-            case 2 -> drives.get(r).getAccessTime();
+            case 2 -> formatter.format(drives.get(r).getAccessTime());
             case 3 -> drives.get(r).getType().getKod();
             case 4 -> drives.get(r).getType().getName();
             case 5 -> drives.get(r).getModel();
